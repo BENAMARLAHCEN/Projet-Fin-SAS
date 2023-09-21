@@ -1,11 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+time_t current_time;
+struct tm *time_new;
+
 void menu();
 void afichage();
 void supprimer();
 void ajouterstatut();
 void modifier();
+void statistique();
 // void tri();
 int recherchedline();
 int rechercheid();
@@ -28,31 +33,33 @@ typedef struct {
 } taches;
 int main() {
   taches *tache, t1;
-  taches *tache1,tache2;
-  
+  taches *tache1, tache2;
+
   int n, idt = 0, b, t = 0;
   deadline dline2;
-  int ch;
-  
+  int ch, day_new;
+  time(&current_time);
+  time_new = localtime(&current_time);
+  day_new = time_new->tm_mday + time_new->tm_mon * 30 + time_new->tm_year * 365;
+
   menu();
   do {
-    
+
     tache = &t1;
     tache = (taches *)malloc((t + 1) * sizeof(taches));
-    tache1 =&t1 ;
+    tache1 = &t1;
     printf("Entrez votre choix :");
     scanf("%d", &n);
     switch (n) {
     case 1:
-      
+
       printf("entrez le nombre de tache :");
-      scanf("%d",&ch);
-      for(int i=0;i<ch;i++){
+      scanf("%d", &ch);
+      for (int i = 0; i < ch; i++) {
         tache = &t1 + t;
-      ajout(tache, idt);
+        ajout(tache, idt);
         t++;
         idt++;
-        
       }
       break;
 
@@ -64,15 +71,16 @@ int main() {
       break;
 
     case 3:
-      // Afficher la liste de toutes les tâches Trier les tâches par ordre alphabétique par titre de tâche
-      for(tache=&t1;tache<&t1+t;tache++){
-        for(tache1=tache+1;tache1<&t1+t;tache1++){
-          if(strcmp(tache->titre,tache1->titre)>0){
-            tache2=*tache;
-            *tache=*tache1;
-            *tache1=tache2;  
-          }  
-      }
+      // Afficher la liste de toutes les tâches Trier les tâches par ordre
+      // alphabétique par titre de tâche
+      for (tache = &t1; tache < &t1 + t; tache++) {
+        for (tache1 = tache + 1; tache1 < &t1 + t; tache1++) {
+          if (strcmp(tache->titre, tache1->titre) > 0) {
+            tache2 = *tache;
+            *tache = *tache1;
+            *tache1 = tache2;
+          }
+        }
       }
       for (tache = &t1; tache < &t1 + t; tache++) {
         afichage(tache);
@@ -80,16 +88,17 @@ int main() {
 
       break;
     case 4:
-      // Afficher la liste de toutes les tâches Trier les tâches par ordre deadline par jour de tâche
-      
-      for(tache=&t1;tache<&t1+t;tache++){
-        for(tache1=tache+1;tache1<&t1+t;tache1++){
-          if(tache->dline.days > tache1->dline.days){
-            tache2=*tache;
-            *tache=*tache1;
-            *tache1=tache2;  
-          }  
-      }
+      // Afficher la liste de toutes les tâches Trier les tâches par ordre
+      // deadline par jour de tâche
+
+      for (tache = &t1; tache < &t1 + t; tache++) {
+        for (tache1 = tache + 1; tache1 < &t1 + t; tache1++) {
+          if (tache->dline.days > tache1->dline.days) {
+            tache2 = *tache;
+            *tache = *tache1;
+            *tache1 = tache2;
+          }
+        }
       }
       for (tache = &t1; tache < &t1 + t; tache++) {
         afichage(tache);
@@ -132,6 +141,7 @@ int main() {
       }
       break;
     case 9:
+      statistique(tache, t, day_new);
       break;
 
     case 0:
@@ -197,7 +207,8 @@ void ajout(taches *tache, int idt) {
     strcpy(tache->statut, "finalisée");
     break;
   }
-  tache->dline.days = tache->dline.jour + tache->dline.mois * 30 + tache->dline.annee * 365;
+  tache->dline.days =
+      tache->dline.jour + tache->dline.mois * 30 + tache->dline.annee * 365;
 }
 
 // fonction de recherche d'une tâche par son titre
@@ -275,10 +286,10 @@ void supprimer(taches *tache, int t, int b) {
 void modifier(taches *tache, int t) {
   deadline dline2;
   taches tache1;
-  int a, b,c;
+  int a, b, c;
   printf("entrer l'identifiant de la tache : ");
   scanf("%d", &c);
-  b=rechercheid(tache,t,c);
+  b = rechercheid(tache, t, c);
   if (b < 0 || b > t) {
     printf("Aucune tâche n'a été trouvé.\n");
 
@@ -309,7 +320,6 @@ void modifier(taches *tache, int t) {
   }
 }
 
-
 // fonction d'ajout d'une statut
 void ajouterstatut(taches *tache) {
   int b;
@@ -338,5 +348,38 @@ void rechercheidenti(taches *tache, int t) {
       afichage(tache);
       break;
     }
+  }
+}
+// Fonction d'affichage d'une statistiques
+void statistique(taches *tache, int t, int day_new) {
+  int b, c = 0, d = 0;
+  taches *tache1;
+  tache1 = tache;
+
+  printf("1-Afficher le nombre total des tâches.\n2-Afficher le nombre de "
+         "tâches complètes et incomplètes.\n3-Afficher le nombre de jours "
+         "restants jusqu'au délai de chaque tâche.\n");
+  printf("Entrer votre choix : ");
+  scanf("%d", &b);
+  switch (b) {
+  case 1:
+    printf("Le nombre total des tâches est : %d\n", t);
+    break;
+  case 2:
+    for (tache = tache1; tache < tache1 + t; tache++) {
+      if (strcmp(tache->statut, "finalisée") == 0) {
+        c++;
+      } else {
+        d++;
+      }
+    }
+    printf("Le nombre de tâches complètes est : %d\n", c);
+    printf("Le nombre de tâches incomplètes est : %d\n", d);
+    break;
+  case 3:
+    printf(
+        "Le nombre de jours restants jusqu'au délai de chaque tâche est : \n");
+    printf("Tâche : %s\n", tache->titre);
+    printf("Jour restant : %ld\n", tache->dline.days - day_new);
   }
 }
