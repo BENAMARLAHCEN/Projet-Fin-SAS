@@ -11,7 +11,6 @@ void supprimer();
 void ajouterstatut();
 void modifier();
 void statistique();
-// void tri();
 int recherchedline();
 int rechercheid();
 void recherchedeadline();
@@ -105,6 +104,12 @@ int main() {
       }
       break;
     case 5:
+    // Afficher les tâches dont le deadline est dans 3 jours ou moins
+      for(tache = &t1; tache < &t1 + t; tache++){
+        if(tache->dline.days <= day_new + 3){
+          afichage(tache);
+        }
+      }
       break;
     case 6:
       tache = &t1;
