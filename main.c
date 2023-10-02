@@ -277,6 +277,7 @@ int main()
             break;
         }
     } while (choix != 0);
+    free(tache);
     return 0;
 }
 // FancTion Menu
@@ -390,7 +391,22 @@ int rechercheid(taches *tache, int taille, int id)
     }
     return -1;
 }
-
+// recherche tache par identifiant
+void rechercheidenti(taches *tache, int taille)
+{
+    int ID;
+    printf("Entrer l'identifiant de la tache : ");
+    scanf("%d", &ID);
+    for (tache = tache; tache <= tache + taille; tache++)
+    {
+        if (tache->id == ID)
+        {
+            printf("Tache trouve : \n");
+            afichage(tache);
+            break;
+        }
+    }
+}
 // fonction de suppression d'une tache
 void supprimer(taches *tache, int taille, int b)
 {
@@ -474,22 +490,7 @@ void ajouterstatut(taches *tache)
         break;
     }
 }
-// recherche tache par identifiant
-void rechercheidenti(taches *tache, int taille)
-{
-    int ID;
-    printf("Entrer l'identifiant de la tache : ");
-    scanf("%d", &ID);
-    for (tache = tache; tache <= tache + taille; tache++)
-    {
-        if (tache->id == ID)
-        {
-            printf("Tache trouve : \n");
-            afichage(tache);
-            break;
-        }
-    }
-}
+
 // Fonction d'affichage d'une statistiques
 void statistique(taches *tache, int taille, int day_new)
 {
